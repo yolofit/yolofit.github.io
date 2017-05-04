@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+    
+    <entry>
+      <title><![CDATA[多说评论迁移]]></title>
+      <url>http://yolofit.coding.me/2017/05/04/%E5%A4%9A%E8%AF%B4%E8%AF%84%E8%AE%BA%E8%BF%81%E7%A7%BB/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p>因公司业务调整，非常遗憾的向大家宣布多说项目即将关闭。 我们将于2017年6月1日正式关停服务，在此之前您可以通过后台的数据导出功能导出自己站点的评论数据。 对此给您造成的不便，我们深表歉意，感谢您的一路相伴。
+<a href="http://dev.duoshuo.com/threads/58d1169ae293b89a20c57241" target="_blank" rel="external">http://dev.duoshuo.com/threads/58d1169ae293b89a20c57241</a></p>
+</blockquote>
+<hr>
+<p>6.1儿童节，多说评论放假了。 
+本想也把评论组件也下架了，本来建hexo就只为记录一些生活，学习琐事。 
+再者几乎没有人在本站评论，太尴尬了。
+想想万一有评论呢，就无法和网友互动了，所以还是找个替代品，把多说评论给替换掉。感谢多说的一直陪伴。</p>
+<a id="more"></a>
+<p>参考了<a href="https://www.v2ex.com/t/349584" target="_blank" rel="external">多说几个替代者的优缺点比较</a>和<a href="https://juejin.im/post/58e868b70ce4630058587d38" target="_blank" rel="external">多说的替代品——来必力评论系统</a>,
+然后就选择了来必力评论系统.(官网)[<a href="https://livere.com/" target="_blank" rel="external">https://livere.com/</a>]</p>
+<p>首先,注册一个账号..
+注册好了之后,在配置评论组件的一些参数,配置完确认,就会生成安装的代码.
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 来必力City版安装代码 --&gt;</div><div class="line">&lt;div id=&quot;lv-container&quot; data-id=&quot;city&quot; data-uid=&quot;MTAyMC8yODQ5My81MDY0&quot;&gt;</div><div class="line">&lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">   (function(d, s) &#123;</div><div class="line">       var j, e = d.getElementsByTagName(s)[0];</div><div class="line"></div><div class="line">       if (typeof LivereTower === &apos;function&apos;) &#123; return; &#125;</div><div class="line"></div><div class="line">       j = d.createElement(s);</div><div class="line">       j.src = &apos;https://cdn-city.livere.com/js/embed.dist.js&apos;;</div><div class="line">       j.async = true;</div><div class="line"></div><div class="line">       e.parentNode.insertBefore(j, e);</div><div class="line">   &#125;)(document, &apos;script&apos;);</div><div class="line">&lt;/script&gt;</div><div class="line">&lt;noscript&gt;为正常使用来必力评论功能请激活JavaScript&lt;/noscript&gt;</div><div class="line">&lt;/div&gt;</div><div class="line">&lt;!-- City版安装代码已完成 --&gt;</div></pre></td></tr></table></figure></p>
+<p>我的blog是next主题,看了模板结构,对比主题大神写的代码,依葫芦画瓢,把liver的安装代码也移植进到主题内.</p>
+<h2 id="需要动刀的文件"><a href="#需要动刀的文件" class="headerlink" title="需要动刀的文件"></a>需要动刀的文件</h2><p>评论组件在模板themes\next2\layout_layout.swig分别引入view和script的.所以在由此找到对应的文件.
+<img src="/images/微信截图_20170504180312.png" alt="图片Alt text"></p>
+<p>1.给liver配置开关,我是用id来做判断,后面初始化也需要用到该id.
+在配置文件themes\next2_config.yml添加相对应的参数livere,在第2步dom会用到
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#livere生成代码时,找到data-uid   ps:&lt;div id=&quot;lv-container&quot; data-id=&quot;city&quot; data-uid=&quot;MTAyMC8yODQ5My81MDY0&quot;&gt; .</div><div class="line">livere:MTAyMC8yODQ5My81MDY0</div></pre></td></tr></table></figure></p>
+<p>1.引入组件的dom钩子,并给data-uid赋值
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">&#123;% if page.comments %&#125;</div><div class="line">  &lt;div class=&quot;comments&quot; id=&quot;comments&quot;&gt;</div><div class="line">    &#123;% if (theme.duoshuo and theme.duoshuo.shortname) or theme.duoshuo_shortname %&#125;</div><div class="line">      &lt;div class=&quot;ds-thread&quot; data-thread-key=&quot;&#123;&#123; page.path &#125;&#125;&quot;</div><div class="line">           data-title=&quot;&#123;&#123; page.title &#125;&#125;&quot; data-url=&quot;&#123;&#123; page.permalink &#125;&#125;&quot;&gt;</div><div class="line">      &lt;/div&gt;</div><div class="line">    &#123;% elseif theme.facebook_sdk.enable and theme.facebook_comments_plugin.enable %&#125;</div><div class="line">      &lt;div class=&quot;fb-comments&quot;</div><div class="line">           data-href=&quot;&#123;&#123; page.permalink &#125;&#125;&quot;</div><div class="line">           data-numposts=&quot;&#123;&#123; theme.facebook_comments_plugin.num_of_posts &#125;&#125;&quot;&gt;</div><div class="line">      &lt;/div&gt;</div><div class="line">    &#123;% elseif theme.livere %&#125;</div><div class="line">      &lt;div id=&quot;lv-container&quot; data-id=&quot;city&quot; data-uid=&quot;&#123;&#123;theme.livere&#125;&#125;&quot;&gt;</div><div class="line">        &lt;noscript&gt; 为正常使用来必力评论功能请激活JavaScript&lt;/noscript&gt;</div><div class="line">      &lt;/div&gt;</div><div class="line">    &#123;% elseif theme.disqus_shortname %&#125;</div><div class="line">      &lt;div id=&quot;disqus_thread&quot;&gt;</div><div class="line">        &lt;noscript&gt;</div><div class="line">          Please enable JavaScript to view the</div><div class="line">          &lt;a href=&quot;//disqus.com/?ref_noscript&quot;&gt;comments powered by Disqus.&lt;/a&gt;</div><div class="line">        &lt;/noscript&gt;</div><div class="line">      &lt;/div&gt;</div><div class="line">    &#123;% endif %&#125;</div><div class="line"></div><div class="line">  &lt;/div&gt;</div><div class="line">&#123;% endif %&#125;</div></pre></td></tr></table></figure></p>
+<p>2.引入初始化脚本.
+在目录themes\next2\layout_scripts\third-party\comments下新建文件livere.swig.
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&#123;% if theme.livere %&#125;</div><div class="line">  &lt;!-- 来必力City版安装代码 --&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">      window.addEventListener(&apos;load&apos;,function()&#123;</div><div class="line">        //添加之后在微信测试,, livere是通过iframe嵌套进去的,直接被微信拦截,,索性把微信给干掉..</div><div class="line">        if(/micromessenger/i.test(navigator.userAgent))&#123;</div><div class="line">          return false;</div><div class="line">        &#125;</div><div class="line">        var j, e = document.getElementsByTagName(&apos;script&apos;)[0];</div><div class="line">        if (typeof LivereTower === &apos;function&apos;) &#123; return; &#125;</div><div class="line">        j = document.createElement(&apos;script&apos;);</div><div class="line">        j.src = &apos;https://cdn-city.livere.com/js/embed.dist.js&apos;;</div><div class="line">        j.async = true;</div><div class="line">        e.parentNode.insertBefore(j, e); </div><div class="line">      &#125;)</div><div class="line">    &lt;/script&gt;</div><div class="line">  &lt;!-- City版安装代码已完成 --&gt;</div><div class="line"></div><div class="line">&#123;% endif %&#125;</div></pre></td></tr></table></figure></p>
+<p>修改目录下themes\next2\layout_scripts\third-party\comments.swig的代码,添加脚本引用入口
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&#123;% include &apos;./comments/duoshuo.swig&apos; %&#125;</div><div class="line">&#123;% include &apos;./comments/disqus.swig&apos; %&#125;</div><div class="line">&#123;% include &apos;./comments/livere.swig&apos; %&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结:"></a>总结:</h2><ol>
+<li>微信端iframe嵌套会有点问题,干脆先干掉好了.</li>
+<li>liver是韩国的,访问有时候也是有点慢,凑合着先用了.</li>
+<li>记得把themes\next2_config.yml文件中 多说的配置参数注释掉. </li>
+</ol>
+]]></content>
+      
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[页面注入脚本调试]]></title>
+      <url>http://yolofit.coding.me/2017/01/13/mobile-debug/</url>
+      <content type="html"><![CDATA[<h2 id="为什么需要注入"><a href="#为什么需要注入" class="headerlink" title="为什么需要注入?"></a>为什么需要注入?</h2><p>在移动端调试页面,刚很久很久以前刚入行的时候,总是alert..alert..满屏幕的阻塞弹窗..
+后来在在网上学到了weinre调试工具(<a href="/2016/07/07/%E6%88%91%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81/#调试">如何使用??看调试部分</a>),
+就一直在目标页面加上weinre脚本,pc端打开控制台调试.但是这种缺点很多.</p>
+<blockquote>
+<ol>
+<li>不好调试线上页面. (但可以用fiddler的AutoResponed把线上资源转发到本地)</li>
+<li>每次都需要在目标页面加上的启动脚本,有时候丢到线上,都有可能忘记删除,- -. (后面打包自动化工具,字符串替换大法解决此尴尬的问题)</li>
+<li>有时候想在别人的页面注入调试脚本,这..貌似也无法解决.</li>
+</ol>
+</blockquote>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><blockquote>
+<ol>
+<li>下载安装fiddler,fiddler SyntaxView插件</li>
+<li>安装node weinre调试工具.</li>
+<li>打开fiddler,weinre服务.</li>
+</ol>
+</blockquote>
+<a id="more"></a>
+<h2 id="随着时间的推移-看了fiddler的一些调试文章-认识到了bpafter指令"><a href="#随着时间的推移-看了fiddler的一些调试文章-认识到了bpafter指令" class="headerlink" title="随着时间的推移,看了fiddler的一些调试文章,认识到了bpafter指令."></a>随着时间的推移,看了fiddler的一些调试文章,认识到了bpafter指令.</h2><p>这个指令的详细介绍可以自行网上搜索下关键字.. fiddler bpafter 看介绍和调试</p>
+<blockquote>
+<ol>
+<li>fiddler右下角输入框处输入要调试的页面,并且回车
+<img src="/images/1484293144(1.png" alt="chrome"></li>
+<li>刷新调试的页面,fiddler拦截到相对应的页面.
+(如果之前没有安装SyntaxView的话,需要去安装fiddler的SyntaxView插件)
+<img src="/images/1484293854(1.png" alt="chrome"></li>
+<li>如果看到的页面已经被服务端gzip压缩过的话,
+<img src="/images/微信截图_20170113155719.png" alt="chrome">
+可到transformer把http comoression 的选项设置为none即可正常查看页面
+<img src="/images/微信截图_20170113155805.png" alt="chrome"></li>
+<li>强行注入调试脚本,开启远程调试,注入完Run to Completion即可.
+<img src="/images/1484294480(1.png" alt="chrome"></li>
+<li>在浏览器端打开weinre控制台..即可.</li>
+</ol>
+</blockquote>
+<p>小结:步骤确实是麻烦了点,以前就只会怎么调试.. 强势推荐下面的方面.</p>
+<h2 id="就今天-学到了另外一种姿势了"><a href="#就今天-学到了另外一种姿势了" class="headerlink" title="就今天,学到了另外一种姿势了.."></a>就今天,学到了另外一种姿势了..</h2><p>(<a href="https://alloyteam.github.io/Rosin/" target="_blank" rel="external">看了腾讯alloyTeam的一个fiddler调试Rosin插件</a>),
+看他在页面注入调试的脚本,想到了一种更好的fiddler调试页面方法,于是乎搜索了fiddler 配置script脚本的相关资料.</p>
+<p>大概思路 fiddler拦截页面,获取到respondBody,修改respondBody内容,最后强行注入.</p>
+<p>步骤如下</p>
+<blockquote>
+<ol>
+<li>打开fiddler-&gt;rule-&gt;customize rules
+<img src="/images/1484295006(1.png" alt="chrome"></li>
+<li><p>自己再撸几行代码(依葫芦画瓢).. 
+在Handlers类下声明几个调试参数
+<img src="/images/微信截图_20170113161458.png" alt="chrome">
+在函数OnBeforeResponse下在撸几串代码.
+<img src="/images/微信截图_20170113161758.png" alt="chrome"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">public static var scriptStr: String = &quot;&lt;script src=&apos;http://192.168.1.88:8081/target/target-script-min.js#anonymous&apos;&gt;&lt;/script&gt;&quot;; // 注入的脚本</div><div class="line">public static var isDebug: boolean = !true; //开头</div><div class="line">public static var filertRegEx=isDebug?/192.168.1.88|yolofit.coding.me/:/NOT_WX_REGEN/;  //过滤正则匹配</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">static function OnBeforeResponse(oSession: Session) &#123;</div><div class="line">  if (m_Hide304s &amp;&amp; oSession.responseCode == 304) &#123;</div><div class="line">      oSession[&quot;ui-hide&quot;] = &quot;true&quot;;</div><div class="line">  &#125;</div><div class="line">  //是否是异步请求的片段</div><div class="line">  var isXML: boolean = oSession.oRequest.headers.ExistsAndContains(&quot;X-Requested-With&quot;,&quot;XMLHttpRequest&quot;);</div><div class="line">  //返回类型是否为html</div><div class="line">  var isHTML: boolean = oSession.oResponse.headers.ExistsAndContains(&quot;Content-Type&quot;, &quot;html&quot;);</div><div class="line">  //var test:String =&quot;&lt;script&gt;&quot;+oSession.hostname+&quot;&lt;/script&gt;&quot;;</div><div class="line">  var isMobile = oSession.oRequest.headers[&quot;User-Agent&quot;].ToLower().Contains(&apos;mobile&apos;);</div><div class="line">  //var isMatch: boolean = filterUrlStr==&apos;all&apos;||filterUrlStr.indexOf(oSession.host)&gt;-1;</div><div class="line">  //筛选地址</div><div class="line">  var isMatch=filertRegEx.test(oSession.fullUrl);</div><div class="line">  if (isMobile &amp;&amp; isMatch &amp;&amp; isHTML &amp;&amp; !isXML )&#123;  </div><div class="line">    // Remove any compression or chunking  </div><div class="line">    oSession.utilDecodeResponse();  </div><div class="line">    var oBody = System.Text.Encoding.UTF8.GetString(oSession.responseBodyBytes);  </div><div class="line">      </div><div class="line">    oBody=oBody.replace(/&lt;head&gt;/i,&apos;&lt;head&gt;&apos;+scriptStr);</div><div class="line">    // Set the response body to the div-less string  </div><div class="line">    oSession.utilSetResponseBody(oBody);   </div><div class="line">  &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>保存..回到 filertRegEx 定义的页面..刷新..即可.. - -简单粗暴</p>
+</li>
+</ol>
+</blockquote>
+<p>小结: 这种注入方式,可简单,更容易配置.比以前那种好用多了,以后就靠以这种方式调试页面了.
+此外,你还可以修改request,respond各项内容,详细介绍 (<a href="http://fiddlerbook.com/Fiddler/dev/ScriptSamples.asp" target="_blank" rel="external">http://fiddlerbook.com/Fiddler/dev/ScriptSamples.asp</a>)</p>
+<p>==============================================================================================</p>
+]]></content>
+      
+        
+        <tags>
+            
+            <tag> 调试 </tag>
+            
+            <tag> fiddler </tag>
+            
+            <tag> weinre </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[我就不信买不到,下周试水~]]></title>
+      <url>http://yolofit.coding.me/2016/12/23/tmall-vmall-buy-huawei/</url>
+      <content type="html"><![CDATA[<h3 id="现在电商都把客户当猴子耍了-抢购3次-都抢不到…-于是乎就写个脚本…看能否抢购到"><a href="#现在电商都把客户当猴子耍了-抢购3次-都抢不到…-于是乎就写个脚本…看能否抢购到" class="headerlink" title="现在电商都把客户当猴子耍了? 抢购3次,都抢不到….于是乎就写个脚本…看能否抢购到."></a>现在电商都把客户当猴子耍了? 抢购3次,都抢不到….于是乎就写个脚本…看能否抢购到.</h3><p><img src="/images/74e07aa0gw1fb0k88sgv4j20fe0ntzo2.jpg" alt="keyDir">
+<a id="more"></a>
+1.谷歌插件. tampermonkey, 火狐有油猴子.
+2.代码片段</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// ==UserScript==</span></div><div class="line"><span class="comment">// @name         天猫&amp;华为 mata9抢购</span></div><div class="line"><span class="comment">// @namespace    http://tampermonkey.net/</span></div><div class="line"><span class="comment">// @version      0.1</span></div><div class="line"><span class="comment">// @description  try to take over the world!</span></div><div class="line"><span class="comment">// @author       yolofit</span></div><div class="line"><span class="comment">// @include      http://sale.vmall.com/mate9pro.html*</span></div><div class="line"><span class="comment">// @include      https://detail.tmall.com/item.htm*</span></div><div class="line"><span class="comment">// @include      https://buy.tmall.com/order/confirm_order.htm*</span></div><div class="line"><span class="comment">// @grant        none</span></div><div class="line"><span class="comment">// ==/UserScript==</span></div><div class="line"></div><div class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line"><span class="meta">    'use strict'</span>;</div><div class="line">    <span class="comment">//alert('test');</span></div><div class="line">    <span class="keyword">var</span> ary=[<span class="string">'#J_LinkBuy'</span>,<span class="string">'[title="立即申购"]'</span>,<span class="string">'.go-btn'</span>];</div><div class="line">    <span class="keyword">var</span> $all=<span class="built_in">document</span>.querySelectorAll(ary.join(<span class="string">','</span>));</div><div class="line">    <span class="keyword">var</span> t=<span class="number">0.2e3</span>;</div><div class="line">    <span class="keyword">var</span> type=&#123;</div><div class="line">        <span class="number">1</span>:<span class="string">'琥珀金'</span>,</div><div class="line">        <span class="number">2</span>:<span class="string">'玫瑰金'</span>,</div><div class="line">        <span class="number">3</span>:<span class="string">'银钻灰'</span></div><div class="line">    &#125;;</div><div class="line">    <span class="keyword">var</span> buy=<span class="number">1</span>; <span class="comment">//</span></div><div class="line"></div><div class="line">    <span class="keyword">var</span> $ck=<span class="built_in">document</span>.querySelector(<span class="string">'[title="'</span>+type[buy]+<span class="string">'"]'</span>);</div><div class="line">    <span class="keyword">var</span> $ck_a=<span class="built_in">document</span>.querySelector(<span class="string">'[title="'</span>+type[buy]+<span class="string">'"] a'</span>);</div><div class="line"></div><div class="line">    setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">        $all.forEach(<span class="function"><span class="keyword">function</span>(<span class="params">v</span>)</span>&#123;</div><div class="line">            <span class="comment">//console.log(v);</span></div><div class="line">            v.click();</div><div class="line">        &#125;);</div><div class="line">        <span class="keyword">if</span>($ck &amp;&amp; $ck.className!==<span class="string">'tb-selected'</span>)&#123;</div><div class="line">            $ck_a &amp;&amp; $ck_a.click();</div><div class="line">        &#125;</div><div class="line">    &#125;,t);</div><div class="line">    <span class="comment">// Your code here...</span></div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+<p>update:2016-12-30 17:06:04
+初始化时页面还没有抢购的dom节点.
+导致周三抢购失败. 事后调整了脚本.
+今天就在天猫撸到了.
+<img src="/images/_20161230101130.png" alt="keyDir"></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// ==UserScript==</span></div><div class="line"><span class="comment">// @name         天猫&amp;华为 mata9抢购</span></div><div class="line"><span class="comment">// @namespace    http://tampermonkey.net/</span></div><div class="line"><span class="comment">// @version      0.1</span></div><div class="line"><span class="comment">// @description  try to take over the world!</span></div><div class="line"><span class="comment">// @author       yolofit</span></div><div class="line"><span class="comment">// @include      http://sale.vmall.com/mate9pro.html*</span></div><div class="line"><span class="comment">// @include      https://detail.tmall.com/item.htm*</span></div><div class="line"><span class="comment">// @include      https://buy.tmall.com/order/confirm_order.htm*</span></div><div class="line"><span class="comment">// @grant        none</span></div><div class="line"><span class="comment">// ==/UserScript==</span></div><div class="line"></div><div class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line"><span class="meta">    'use strict'</span>;</div><div class="line">    <span class="comment">//alert('test');</span></div><div class="line">    <span class="keyword">var</span> t=<span class="number">0.2e3</span>;</div><div class="line">    <span class="keyword">var</span> type=&#123;</div><div class="line">        <span class="number">1</span>:<span class="string">'琥珀金'</span>,</div><div class="line">        <span class="number">2</span>:<span class="string">'玫瑰金'</span>,</div><div class="line">        <span class="number">3</span>:<span class="string">'银钻灰'</span></div><div class="line">    &#125;;</div><div class="line">    <span class="keyword">var</span> buy=<span class="number">1</span>; <span class="comment">//</span></div><div class="line"></div><div class="line">    setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">        <span class="keyword">var</span> ary=[<span class="string">'#J_LinkBuy'</span>,<span class="string">'[title="立即申购"]'</span>,<span class="string">'.go-btn'</span>];</div><div class="line">        <span class="keyword">var</span> $all=<span class="built_in">document</span>.querySelectorAll(ary.join(<span class="string">','</span>));</div><div class="line">        <span class="keyword">var</span> $ck=<span class="built_in">document</span>.querySelector(<span class="string">'[title="'</span>+type[buy]+<span class="string">'"]'</span>);</div><div class="line">        <span class="keyword">var</span> $ck_a=<span class="built_in">document</span>.querySelector(<span class="string">'[title="'</span>+type[buy]+<span class="string">'"] a'</span>);</div><div class="line">        $all.forEach(<span class="function"><span class="keyword">function</span>(<span class="params">v</span>)</span>&#123;</div><div class="line">            <span class="comment">//console.log(v);</span></div><div class="line">            v.click();</div><div class="line">        &#125;);</div><div class="line">        <span class="keyword">if</span>($ck &amp;&amp; $ck.className!==<span class="string">'tb-selected'</span>)&#123;</div><div class="line">            $ck_a &amp;&amp; $ck_a.click();</div><div class="line">        &#125;</div><div class="line">    &#125;,t);</div><div class="line">    <span class="comment">// Your code here...</span></div><div class="line">&#125;)();</div></pre></td></tr></table></figure>]]></content>
+      
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[本站 hexo性能优化方案]]></title>
+      <url>http://yolofit.coding.me/2016/07/12/%E6%9C%AC%E7%AB%99-hexo%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</url>
+      <content type="html"><![CDATA[<h2 id="hexo性能优化方案"><a href="#hexo性能优化方案" class="headerlink" title="hexo性能优化方案"></a>hexo性能优化方案</h2><h3 id="调整CDN"><a href="#调整CDN" class="headerlink" title="调整CDN"></a>调整CDN</h3><ol>
+<li><p>我使用的是next主题,然后把_config.yml上原有的CDN替换成了cdn.bootcss.com的镜像.代码片段如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">vendors:</div><div class="line">  <span class="comment"># Internal path prefix. Please do not edit it.</span></div><div class="line">  _internal: vendors</div><div class="line"></div><div class="line">  <span class="comment"># Internal version: 2.1.3</span></div><div class="line">  jquery: //cdn.bootcss.com/jquery/2.1.3/jquery.min.js</div></pre></td></tr></table></figure>
+</li>
+<li><p>字体库换成360的</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">font:</div><div class="line">  <span class="built_in">enable</span>: <span class="literal">true</span></div><div class="line">  <span class="comment"># Uri of fonts host. E.g. //fonts.googleapis.com (Default)</span></div><div class="line">  host: //fonts.useso.com  <span class="comment">#这个是360的镜像</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="用gulp压缩html-js-css-image"><a href="#用gulp压缩html-js-css-image" class="headerlink" title="用gulp压缩html,js,css,image"></a>用gulp压缩html,js,css,image</h3><p>安装npm包
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">cnpm install gulp --save-dev</div><div class="line">cnpm install gulp-htmlmin --save-dev</div><div class="line">cnpm install gulp-uglify --save-dev</div><div class="line">cnpm install gulp-minify-css --save-dev</div><div class="line">cnpm install gulp-imagemin --save-dev</div><div class="line">cnpm install gulp-htmlclean --save-dev</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>gulpfile.js代码如下
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> gulp = <span class="built_in">require</span>(<span class="string">'gulp'</span>);</div><div class="line"><span class="keyword">var</span> htmlmin = <span class="built_in">require</span>(<span class="string">'gulp-htmlmin'</span>);</div><div class="line"><span class="keyword">var</span> jsmin = <span class="built_in">require</span>(<span class="string">'gulp-uglify'</span>);</div><div class="line"><span class="keyword">var</span> cssmin = <span class="built_in">require</span>(<span class="string">'gulp-minify-css'</span>);</div><div class="line"><span class="keyword">var</span> imagemin = <span class="built_in">require</span>(<span class="string">'gulp-imagemin'</span>);</div><div class="line"><span class="keyword">var</span> htmlclean = <span class="built_in">require</span>(<span class="string">'gulp-htmlclean'</span>);</div><div class="line"></div><div class="line"><span class="comment">// 压缩 public 目录 html</span></div><div class="line">gulp.task(<span class="string">'htmlmin'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> gulp.src(<span class="string">'./public/**/*.html'</span>)</div><div class="line">    .pipe(htmlclean())</div><div class="line">    .pipe(htmlmin(&#123;</div><div class="line">      <span class="attr">minifyJS</span>: <span class="literal">true</span>,</div><div class="line">      <span class="attr">minifyCSS</span>: <span class="literal">true</span>,</div><div class="line">      <span class="attr">removeComments</span>: <span class="literal">true</span>,</div><div class="line">      <span class="attr">minifyURLs</span>: <span class="literal">true</span>,</div><div class="line">    &#125;))</div><div class="line">    .pipe(gulp.dest(<span class="string">'./public'</span>));</div><div class="line">&#125;);</div><div class="line"></div><div class="line">gulp.task(<span class="string">'cssmin'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> gulp.src(<span class="string">'./public/**/*.css'</span>)</div><div class="line">    .pipe(cssmin())</div><div class="line">    .pipe(gulp.dest(<span class="string">'./public'</span>));</div><div class="line">&#125;);</div><div class="line"></div><div class="line"></div><div class="line">gulp.task(<span class="string">'jsmin'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> gulp.src(<span class="string">'./public/**/*.js'</span>)</div><div class="line">    .pipe(jsmin())</div><div class="line">    .pipe(gulp.dest(<span class="string">'./public'</span>));</div><div class="line">&#125;);</div><div class="line"></div><div class="line">gulp.task(<span class="string">'imagemin'</span>, () =&gt;</div><div class="line">    gulp.src(<span class="string">'./public/images/*'</span>)</div><div class="line">        .pipe(imagemin())</div><div class="line">        .pipe(gulp.dest(<span class="string">'./public/images'</span>))</div><div class="line">);</div><div class="line"></div><div class="line">gulp.task(<span class="string">'default'</span>, [</div><div class="line">    <span class="string">'htmlmin'</span>,<span class="string">'jsmin'</span>,<span class="string">'cssmin'</span>,<span class="string">'imagemin'</span></div><div class="line">]);</div></pre></td></tr></table></figure></p>
+<p>生成静态文件-&gt;压缩-&gt;部署
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo g &amp;&amp; gulp &amp;&amp; hexo d</div></pre></td></tr></table></figure></p>
+<p>每次都要执行那么长指令? 我是把他放到package.json的scripts上
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">"scripts": &#123;</div><div class="line">  "d": "hexo g &amp;&amp; gulp &amp;&amp; hexo d"</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm run d <span class="comment"># 这样就等价于hexo g &amp;&amp; gulp &amp;&amp; hexo d 了.是不是方便多了.</span></div></pre></td></tr></table></figure>]]></content>
+      
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[自己在使用的一些开发工具,调试]]></title>
+      <url>http://yolofit.coding.me/2016/07/07/%E6%88%91%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81/</url>
+      <content type="html"><![CDATA[<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><h3 id="sublime-text-3-强大的编辑器"><a href="#sublime-text-3-强大的编辑器" class="headerlink" title="sublime text 3 强大的编辑器"></a>sublime text 3 强大的编辑器</h3><h3 id="谷歌插件"><a href="#谷歌插件" class="headerlink" title="谷歌插件"></a>谷歌插件</h3><ol>
+<li><a href="https://chrome.google.com/webstore/detail/calkaljlpglgogjfcidhlmmlgjnpmnmf?utm_source=chrome-app-launcher-info-dialog" target="_blank" rel="external">离线二维码</a>,简洁无广告,需要翻墙才可进去..</li>
+<li><a href="https://chrome.google.com/webstore/detail/calkaljlpglgogjfcidhlmmlgjnpmnmf?utm_source=chrome-app-launcher-info-dialog" target="_blank" rel="external">restful api test</a></li>
+<li><a href="https://chrome.google.com/webstore/detail/json-editor/lhkmoheomjbkfloacpgllgjcamhihfaj?utm_source=chrome-app-launcher-info-dialog" target="_blank" rel="external">json</a><h3 id="梯-子-蓝-amp-灯-lantern-他还有安卓版的"><a href="#梯-子-蓝-amp-灯-lantern-他还有安卓版的" class="headerlink" title="梯!子. 蓝&amp;灯,lantern,他还有安卓版的."></a>梯!子. <a href="https://github.com/getlantern/lantern" target="_blank" rel="external">蓝&amp;灯,lantern</a>,他还有安卓版的.</h3></li>
+</ol>
+<hr>
+<h2 id="开发"><a href="#开发" class="headerlink" title="开发"></a>开发</h2><h3 id="livestyle-样式同步器-可同步浏览器和编辑器的样式-css-sass-less-不支持stylus-解放双手-无须手动更新"><a href="#livestyle-样式同步器-可同步浏览器和编辑器的样式-css-sass-less-不支持stylus-解放双手-无须手动更新" class="headerlink" title="livestyle 样式同步器,可同步浏览器和编辑器的样式(css,sass,less,不支持stylus),解放双手,无须手动更新."></a><a href="http://livestyle.io/" target="_blank" rel="external">livestyle</a> 样式同步器,可同步浏览器和编辑器的样式(css,sass,less,<em>不支持stylus</em>),解放双手,无须手动更新.</h3><blockquote>
+<p>这个我安装chrome插件,sublime text 插件配合使用.</p>
+<ol>
+<li>Sublime Text装个Emmet LiveStyle插件</li>
+<li>chrome商场里面装个<a href="https://chrome.google.com/webstore/detail/emmet-livestyle/diebikgmpmeppiilkaijjbdgciafajmg?utm_source=chrome-app-launcher-info-dialog" target="_blank" rel="external">Emmet LiveStyle</a>
+如何使用?</li>
+<li>在Sublime Text 打开需要映射的css.
+<img src="/images/QQ截图20160707153604.png" alt="Sublime text Tab"></li>
+<li>在chrome插件栏目下,找到Emmet LiveStyle并开启,(注意新版的插件在控制台面板上的也有tab,但是没有什么作用的.)</li>
+<li>在开启之后界面里,选择相对于需要映射的样式即可.
+<img src="/images/QQ图片20160707153915.png" alt="chrome Tab">
+<a href="http://livestyle.io/docs/" target="_blank" rel="external">这里是官网的文档.</a></li>
+</ol>
+</blockquote>
+<hr>
+<a id="more"></a>
+<h3 id="利用chrome控制台的资源面板-这个也同步css-js-html代码-但是不会自动刷新-需要手动刷新"><a href="#利用chrome控制台的资源面板-这个也同步css-js-html代码-但是不会自动刷新-需要手动刷新" class="headerlink" title="利用chrome控制台的资源面板,这个也同步css,js,html代码,但是不会自动刷新,需要手动刷新."></a>利用chrome控制台的资源面板,这个也同步css,js,html代码,但是不会自动刷新,需要手动刷新.</h3><blockquote>
+<p>首先肯定就是打开F12控制台啦,然后看下此图. (添加也可以使用文件拉拽方式);
+<img src="/images/QQ截图20160707155628.png" alt="chrome">
+3.在当前站点下打开,然后找个静态资源,右键如下图,然后点击Map to file system resoure….
+<img src="/images/QQ截图20160707160041.png" alt="chrome">
+4.显示面板查找相对于的文件,就可以映射了.
+<img src="/images/QQ图片20160707160717.png" alt="chrome">
+5.成功之后的样子,
+6.移除本地项目
+<img src="/images/QQ截图20160707162003.png" alt="chrome">
+7.然后在资源面板下打开文件,然后修改下代码,本地也会自动修改了. 相对于chrome就是一个编辑器了.</p>
+</blockquote>
+<hr>
+<h2 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h2><h3 id="Weinre-和谷歌开发者工具差不多-但是不能加断点"><a href="#Weinre-和谷歌开发者工具差不多-但是不能加断点" class="headerlink" title="Weinre,和谷歌开发者工具差不多,但是不能加断点."></a><a href="https://www.npmjs.com/package/weinre" target="_blank" rel="external">Weinre</a>,和谷歌开发者工具差不多,但是不能加断点.</h3><blockquote>
+<ol>
+<li>安装node</li>
+<li>这里我全局安装weinre了.<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; npm install weinre -g</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li>安装完之后,执行以下代码即可开启服务<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; weinre  --httpPort 8081 --boundHost -all-  </div><div class="line">&gt; ``` </div><div class="line">&gt; </div><div class="line">&gt; 4. 打开有相对应的http://换成你的ip:8081, 就可以看到教程了,下边我在抽取一下.</div><div class="line">&gt; 需要调试的页面插入此段代码</div><div class="line">&gt; ``` html</div><div class="line">&gt; &lt;script src=<span class="string">"http://192.168.1.66:8081/target/target-script-min.js#anonymous"</span>&gt;&lt;/script&gt;</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>浏览器打开<a href="http://192.168.1.66:8081/client/#anonymous" target="_blank" rel="external">http://192.168.1.66:8081/client/#anonymous</a>.即可调试了</p>
+</blockquote>
+<hr>
+<h3 id="broswer-sync-这个安装麻烦点-我的是win7的-需要安装个vs2013-所以比较少用"><a href="#broswer-sync-这个安装麻烦点-我的是win7的-需要安装个vs2013-所以比较少用" class="headerlink" title="broswer-sync, 这个安装麻烦点,我的是win7的,需要安装个vs2013,所以比较少用."></a><a href="http://www.browsersync.cn/docs/" target="_blank" rel="external">broswer-sync</a>, 这个安装麻烦点,我的是win7的,需要安装个vs2013,所以比较少用.</h3><blockquote>
+<p>这个可以多终端行为同步, 比如点击事件,屏幕滚动等等.
+自己看上面教程学习吧.</p>
+</blockquote>
+<hr>
+<h3 id="在线debug-借助socket搭的服务-http-ngdemo-sinaapp-com-debug-hash-lwxdebug-但是该作者貌似把服务关闭了-我自己看了下socket-也模仿搭了一个https-git-coding-net-yolofit-debugger-git"><a href="#在线debug-借助socket搭的服务-http-ngdemo-sinaapp-com-debug-hash-lwxdebug-但是该作者貌似把服务关闭了-我自己看了下socket-也模仿搭了一个https-git-coding-net-yolofit-debugger-git" class="headerlink" title="在线debug,借助socket搭的服务.http://ngdemo.sinaapp.com/debug/?hash=lwxdebug,但是该作者貌似把服务关闭了,我自己看了下socket,也模仿搭了一个https://git.coding.net/yolofit/debugger.git."></a>在线debug,借助socket搭的服务.<a href="http://ngdemo.sinaapp.com/debug/?hash=lwxdebug" target="_blank" rel="external">http://ngdemo.sinaapp.com/debug/?hash=lwxdebug</a>,但是该作者貌似把服务关闭了,我自己看了下socket,也模仿搭了一个<a href="https://git.coding.net/yolofit/debugger.git" target="_blank" rel="external">https://git.coding.net/yolofit/debugger.git</a>.</h3><hr>
+<h3 id="屌爆了-完美调试-微信webview-x5-只能在安卓机上使用"><a href="#屌爆了-完美调试-微信webview-x5-只能在安卓机上使用" class="headerlink" title="屌爆了,完美调试 微信webview(x5),只能在安卓机上使用."></a><a href="http://www.jianshu.com/p/ccf124f1f74b" target="_blank" rel="external">屌爆了,完美调试 微信webview(x5)</a>,只能在安卓机上使用.</h3><p>我是看了这篇文章教程,安装起来比较繁琐,不好安装,但是微信调试很好用,可加断点,但是断点不是很稳定.
+下面分享下安装过程以及使用方式</p>
+<ol>
+<li>TbsSuiteNew内核实在是不好安装,反正我安卓手机一直装不了,后面尝试各种版本,最好用手动安装的方式成功了,可累了.<blockquote>
+<p><a href="http://blog.qqbrowser.cc/ru-he-shou-dong-kao-bei-tbs-apk/" target="_blank" rel="external">如何手动安装TBS包</a></p>
+</blockquote>
+</li>
+<li>ADB安装,第一次使用这种方式调试,但是很不方便,依赖数据线.<a href="http://bbs.mb.qq.com/thread-227056-1-1.html?fid=93&amp;gid=45" target="_blank" rel="external">后面改成用wifi adb调试的方法</a></li>
+</ol>
+<hr>
+<h3 id="微信web开发者工具-安装到window即可-自己很少用"><a href="#微信web开发者工具-安装到window即可-自己很少用" class="headerlink" title="微信web开发者工具,安装到window即可,自己很少用."></a><a href="http://mp.weixin.qq.com/wiki/10/e5f772f4521da17fa0d7304f68b97d7e.html" target="_blank" rel="external">微信web开发者工具</a>,安装到window即可,自己很少用.</h3><hr>
+<h3 id="抓包工具Fiddler-点击进入官网下载即可"><a href="#抓包工具Fiddler-点击进入官网下载即可" class="headerlink" title="抓包工具Fiddler,点击进入官网下载即可."></a><a href="http://www.telerik.com/fiddler" target="_blank" rel="external">抓包工具Fiddler</a>,点击进入官网下载即可.</h3><blockquote>
+<p>fiddler可以做很多有趣的事情,比如host代理(可用于微信sdk调试),地址转发(可用生产地址映射到本地地址调试),请求抓包等等.
+抓移动端的包的话, 手机和电脑需要配置一下. 设备需要在同一个局域网内.</p>
+<ol>
+<li>打开fiddler, 点击点击 tools-&gt;Fiddler Options-&gt;connetions
+<img src="/images/QQ图片20160707172128.png" alt="fiddler"></li>
+<li>把allow remote couputers to connet 这个选项勾上.</li>
+<li>手机端的设置一下网络代理, 端口号默认是8888.
+<img src="/images/S60707-172318.jpg" alt="mobile wifi"></li>
+<li>手机打开任意网站,即可在fiddler看到请求的信息了.</li>
+<li>自己常用调试功能s
+请求信息和返回信息等参数
+<img src="/images/QQ截图20160707173159.png" alt="fiddler pic">
+地址转发
+<img src="/images/QQ截图20160707173159.png" alt="fiddler pic">
+host 
+<img src="/images/QQ截图20160707173417.png" alt="fiddler pic"></li>
+</ol>
+</blockquote>
+<hr>
+<h3 id="更新日志"><a href="#更新日志" class="headerlink" title="更新日志"></a>更新日志</h3><p>2016-7-12 16:24:27 更新谷歌插件 restful api , json</p>
+]]></content>
+      
+        
+        <tags>
+            
+            <tag> 调试 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[搭建hexo,并且部署到coding,github上]]></title>
+      <url>http://yolofit.coding.me/2016/06/30/%E6%90%AD%E5%BB%BAhexo-%E5%B9%B6%E4%B8%94%E9%83%A8%E7%BD%B2%E5%88%B0coding-github%E4%B8%8A/</url>
+      <content type="html"><![CDATA[<h2 id="开发环境"><a href="#开发环境" class="headerlink" title="开发环境"></a>开发环境</h2><h3 id="安装node和淘宝cnpm指令"><a href="#安装node和淘宝cnpm指令" class="headerlink" title="安装node和淘宝cnpm指令"></a>安装node和淘宝cnpm指令</h3><ol>
+<li><a href="https://nodejs.org/e
+n/" target="_blank" rel="external">nodejs下载地址</a></li>
+<li><a href="https://git-scm.com/downloads" target="_blank" rel="external">git安装</a></li>
+<li><p>cnpm代替npm.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install -g cnpm --registry=https://registry.npm.taobao.org</div></pre></td></tr></table></figure>
+</li>
+<li><p><a href="https://npm.taobao.org/" target="_blank" rel="external">淘宝npm镜像</a> ps:淘宝镜像可装可不装,不过就国内环境,建议安装拉.装了之后,以后装node包就用cnpm指令.</p>
+</li>
+</ol>
+<h3 id="全局安装hexo-hexo-cli模块"><a href="#全局安装hexo-hexo-cli模块" class="headerlink" title="全局安装hexo,hexo-cli模块"></a>全局安装hexo,hexo-cli模块</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cnpm install hexo -g</div><div class="line">cnpm install hexo-cli -g</div></pre></td></tr></table></figure>
+<h3 id="检查是否都成功安装"><a href="#检查是否都成功安装" class="headerlink" title="检查是否都成功安装"></a>检查是否都成功安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">npm -v</div><div class="line">cnpm -v</div><div class="line">hexo -v</div></pre></td></tr></table></figure>
+<p>若正常显示其版本号即表示成功安装了.
+ps:git可以在桌面右键,看菜单是否有 “Git Bash Here” 这项.
+<a id="more"></a></p>
+<h2 id="搭建并且初始化"><a href="#搭建并且初始化" class="headerlink" title="搭建并且初始化"></a>搭建并且初始化</h2><p>开发环境准备好了,为了顺顺利利部署hexo blog,建议安装我这流程走.
+我的blog源码是托管coding的分支hexo上,静态文件就放到coding,github的master分支上.</p>
+<h3 id="到coding-github上创建仓库"><a href="#到coding-github上创建仓库" class="headerlink" title="到coding,github上创建仓库"></a>到coding,github上创建仓库</h3><p>ps:以下都是以coding创建为主,github流程也一样
+<strong>仓库名称和你的用户名要一样,仓库名称和你的用户名要一样,仓库名称和你的用户名要一样.</strong>
+重要的事情要多说几次,  名称和用户名一样的话,后面就可以用<a href="http://yolofit.coding.me/直接访问了">http://yolofit.coding.me/直接访问了</a>.
+<a href="http://yolofit.coding.me">http://yolofit.coding.me</a> 等价于 <a href="http://yolofit.coding.me/yolofit">http://yolofit.coding.me/yolofit</a>, 若是不一样的话,你就无法直接用<a href="http://yolofit.coding.me">http://yolofit.coding.me</a>了,因为你需要访问<a href="http://yolofit.coding.me/仓库名">http://yolofit.coding.me/仓库名</a>;
+<a href="http://jingyan.baidu.com/article/ed2a5d1f3732cb09f7be1745.html" target="_blank" rel="external">github建pages的教程</a> </p>
+<h3 id="因为我的源文件是打算放到coding上-所以创建仓库之后-把仓库给克隆下来"><a href="#因为我的源文件是打算放到coding上-所以创建仓库之后-把仓库给克隆下来" class="headerlink" title="因为我的源文件是打算放到coding上,所以创建仓库之后,把仓库给克隆下来."></a>因为我的源文件是打算放到coding上,所以创建仓库之后,把仓库给克隆下来.</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">git <span class="built_in">clone</span> https://git.coding.net/uername/uername.git</div><div class="line">git branch hexo <span class="comment">#创建hexo分支</span></div><div class="line">git checkout hexo  <span class="comment">#切换到hexo分支</span></div></pre></td></tr></table></figure>
+<p>ps:建议把ssh key公钥也配置一下,<a href="/2016/06/28/配置github-coding-的ssh遇到问题总结/">可参考这个链接</a></p>
+<h3 id="仓库克隆下来之后-就是初始化demo了"><a href="#仓库克隆下来之后-就是初始化demo了" class="headerlink" title="仓库克隆下来之后,就是初始化demo了"></a>仓库克隆下来之后,就是初始化demo了</h3><p>依次执行以下指令</p>
+<p>###
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">hexo init        <span class="comment">#初始化hexo</span></div><div class="line">cnpm install     <span class="comment">#安装hexo blog依赖</span></div><div class="line">hexo s --debug   <span class="comment">#(hexo server)开启服务器,--debug参数可以去掉,但是每次修改文件就得自己在去执行hexo g一次. </span></div><div class="line">hexo g           <span class="comment">#(hexo generate)生成本地静态文件</span></div></pre></td></tr></table></figure></p>
+<p>成功之后,浏览器打开<a href="http://127.0.0.1:4000/" target="_blank" rel="external">http://127.0.0.1:4000/</a>可以预览效果了.</p>
+<h2 id="部署到coding-github上"><a href="#部署到coding-github上" class="headerlink" title="部署到coding,github上"></a>部署到coding,github上</h2><h3 id="要把静态文件部署到coding-github上-需要先装hexo-deployer-git"><a href="#要把静态文件部署到coding-github上-需要先装hexo-deployer-git" class="headerlink" title="要把静态文件部署到coding,github上,需要先装hexo-deployer-git"></a>要把静态文件部署到coding,github上,需要先装hexo-deployer-git</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cnpm install hexo-deployer-git --save <span class="comment">#把包保存到package.json</span></div></pre></td></tr></table></figure>
+<h3 id="在当前项目下打开-config-yml-添加推送的地址"><a href="#在当前项目下打开-config-yml-添加推送的地址" class="headerlink" title="在当前项目下打开_config.yml,添加推送的地址"></a>在当前项目下打开_config.yml,添加推送的地址</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#https://github.com/hexojs/hexo-deployer-git</span></div><div class="line"><span class="comment">#配置说明 单个地址配置</span></div><div class="line"><span class="comment"># deploy:</span></div><div class="line"><span class="comment">#   type: git</span></div><div class="line"><span class="comment">#   repo: git@github.com:yolofit/yolofit.github.io.git</span></div><div class="line"><span class="comment">#   branch: master</span></div><div class="line"></div><div class="line"><span class="comment"># 多个地址配置  </span></div><div class="line">deploy:</div><div class="line">  <span class="built_in">type</span>: git</div><div class="line">  repo: </div><div class="line">    github: git@github.com:yolofit/yolofit.github.io.git,master  <span class="comment"># 这里我是用ssh的推送方式</span></div><div class="line">    coding: git@git.coding.net:yolofit/yolofit.git,master</div><div class="line">  <span class="comment"># branch: master</span></div></pre></td></tr></table></figure>
+<h3 id="配置完之后-就可以把源代码提交到hexo分支-把静态文件提交到master分支了"><a href="#配置完之后-就可以把源代码提交到hexo分支-把静态文件提交到master分支了" class="headerlink" title="配置完之后,就可以把源代码提交到hexo分支,把静态文件提交到master分支了."></a>配置完之后,就可以把源代码提交到hexo分支,把静态文件提交到master分支了.</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git push origin hexo <span class="comment">#指令将改动推送到GitHub(此时当前分支应为hexo)</span></div><div class="line">hexo g <span class="_">-d</span> <span class="comment">#(hexo generate deploy)发布静态文件到本地并且提交到master分支.</span></div></pre></td></tr></table></figure>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="http://jingyan.baidu.com/article/ed2a5d1f3732cb09f7be1745.html" target="_blank" rel="external">github建pages的教程</a>
+<a href="http://dontcry2013.github.io/2016/03/02/hexo-change-workstation/" target="_blank" rel="external">hexo换电脑麻烦解决</a>
+<a href="https://npm.taobao.org/" target="_blank" rel="external">淘宝npm镜像</a>
+<a href="https://github.com/hexojs/hexo-deployer-git" target="_blank" rel="external">hexo-deployer-git</a></p>
+]]></content>
+      
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[学习markdown语法]]></title>
+      <url>http://yolofit.coding.me/2016/06/29/%E5%AD%A6%E4%B9%A0markdown%E8%AF%AD%E6%B3%95/</url>
+      <content type="html"><![CDATA[<h2 id="基本用法-边学边用-具体教程如下链接"><a href="#基本用法-边学边用-具体教程如下链接" class="headerlink" title="基本用法,边学边用,具体教程如下链接."></a>基本用法,边学边用,具体教程如下链接.</h2><p><a href="http://wowubuntu.com/markdown/index.html" target="_blank" rel="external">markdown快速入门</a>
+<a href="https://github.com/SublimeText-Markdown/MarkdownEditing" target="_blank" rel="external">markdown的sublime text插件</a></p>
+<h3 id="标题"><a href="#标题" class="headerlink" title="标题"></a>标题</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># #==&gt;&lt;h1&gt;title&lt;/h1&gt;</div><div class="line">## ##==&gt;&lt;h2&gt;title&lt;/h2&gt;</div><div class="line">### ###==&gt;&lt;h3&gt;title&lt;/h3&gt;</div><div class="line">以此类推</div></pre></td></tr></table></figure>
+<h3 id="加粗bold-斜体italic"><a href="#加粗bold-斜体italic" class="headerlink" title="加粗bold/斜体italic"></a><strong>加粗bold</strong>/<em>斜体italic</em></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">__bold__ </div><div class="line">**bold**</div><div class="line"></div><div class="line">_italic_</div><div class="line">*italic*</div></pre></td></tr></table></figure>
+<h3 id="超链接google"><a href="#超链接google" class="headerlink" title="超链接google"></a>超链接<a href="https://google.cn" target="_blank" rel="external">google</a></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[google](https://google.cn)</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片<img src="http://o9h6614yh.bkt.clouddn.com/images/header.jpg" alt="图片Alt text"></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">![Alt text](/img/weibo.png)</div></pre></td></tr></table></figure>
+<h3 id="gt-块-blockquote-1-有序列表-ol-无序列表-ul"><a href="#gt-块-blockquote-1-有序列表-ol-无序列表-ul" class="headerlink" title="(&gt;)块(blockquote) / 1.有序列表(ol) / (*-+)无序列表(ul)"></a>(&gt;)块(blockquote) / 1.有序列表(ol) / (*-+)无序列表(ul)</h3><blockquote>
+<p>有序列表</p>
+<ol>
+<li>这里是2</li>
+<li>这里是3</li>
+<li>这里是4<blockquote>
+<p>无序列表</p>
+<ul>
+<li>无序列表1</li>
+<li>无序列表2</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<h3 id="代码块"><a href="#代码块" class="headerlink" title="代码块"></a>代码块</h3><p>(```)代码块html(code)</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">(```)代码块html(code)</div><div class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span>"1"<span class="tag">&lt;/<span class="name">li</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span>2<span class="tag">&lt;/<span class="name">li</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span>3<span class="tag">&lt;/<span class="name">li</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">(```)代码块bash(code)</div><div class="line">$ hexo new <span class="string">"hello world"</span></div></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">(```)代码块<span class="selector-tag">css</span>(<span class="selector-tag">code</span>)</div><div class="line"><span class="selector-class">.class</span>&#123;</div><div class="line">    <span class="attribute">color</span>:red</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<hr>
+<h3 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h3><ol>
+<li>第一次使用,有点不习惯.</li>
+<li>先学习部分语法,以后在深入.</li>
+<li>标记后面需要加空格</li>
+<li>严格缩进,缩进很重要</li>
+<li>感觉用html写会更舒服点. -_-</li>
+</ol>
+]]></content>
+      
+        
+        <tags>
+            
+            <tag> markdown </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[配置github coding 的ssh流程与问题总结]]></title>
+      <url>http://yolofit.coding.me/2016/06/28/%E9%85%8D%E7%BD%AEgithub-coding-%E7%9A%84ssh%E9%81%87%E5%88%B0%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/</url>
+      <content type="html"><![CDATA[<h2 id="配置ssh-key"><a href="#配置ssh-key" class="headerlink" title="配置ssh key"></a>配置ssh key</h2><h3 id="生成第一个key"><a href="#生成第一个key" class="headerlink" title="生成第一个key"></a>生成第一个key</h3><ol>
+<li>$ ssh-keygen -t rsa -C “helloworld@gmail.com” </li>
+<li>一路回车即可,第一次添加key成功之后会在C:\Users\Administrator下生成.ssh目录</li>
+<li>id_rsa.pub打开,里面一大串东西即是公钥了,后面添加到coding时需要用到.</li>
+</ol>
+<h3 id="生成第二个key"><a href="#生成第二个key" class="headerlink" title="生成第二个key"></a>生成第二个key</h3><ol>
+<li>$ ssh-keygen -t rsa -C “helloworld@gmail.com” </li>
+<li>这里要注意下,不可以一路回车了,不然会覆盖前面的生成的.需要给其取个文件名,比如id_rsa_github. 注意:第二次生成的文件会在你当前执行bash窗口所在目录下.比如我在桌面执行bash的,那么会生成到桌面.</li>
+<li>继续回车,然后把bash复制到C:\Users\Administrator.ssh目录
+<img src="/images/keyDir.png" alt="keyDir"></li>
+</ol>
+<a id="more"></a>
+<h3 id="把key配置到github-coding上"><a href="#把key配置到github-coding上" class="headerlink" title="把key配置到github,coding上"></a>把key配置到github,coding上</h3><p><img src="/images/codingKey.png" alt="codingKey">
+<img src="/images/githubKey.png" alt="githubKey"></p>
+<h3 id="配置config"><a href="#配置config" class="headerlink" title="配置config"></a>配置config</h3><ol>
+<li>在~.ssh目录下新建一个空文件 config (可用指令touch config).</li>
+<li>记事本打开,然后把这代码粘贴进去. 
+<a href="https://coding.net/help/faq/git/git.html" target="_blank" rel="external">注意coding写法是不一样的</a><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"># coding</div><div class="line">Host git.coding.net</div><div class="line">    User yourmail@gmail.com</div><div class="line">    PreferredAuthentications publickey</div><div class="line">    IdentityFile ~/.ssh/id_rsa</div><div class="line"></div><div class="line"># github</div><div class="line">Host github.com</div><div class="line">    HostName github.com</div><div class="line">    PreferredAuthentications publickey</div><div class="line">    IdentityFile ~/.ssh/id_rsa_github</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="测试是否配置成功"><a href="#测试是否配置成功" class="headerlink" title="测试是否配置成功"></a>测试是否配置成功</h3><p>$ ssh -T git@git.coding.net
+Hello username You’ve connected to Coding.net by SSH successfully!</p>
+<p>$ ssh -T git@github.com
+Hi username! You’ve successfully authenticated, but GitHub does not provide shel
+l access.</p>
+<p>若出现successfully就表示配置成功了.</p>
+<h1 id="问题与总结"><a href="#问题与总结" class="headerlink" title="问题与总结"></a>问题与总结</h1><ol>
+<li>之前生成key的时候,提示要输入密码. 自己比较粗心,就把coding的登陆密码输进入了,这样每次push,pull操作都需要在输入密码.因为我设置ssh初衷就是解决每次输入密码之苦,但这样完全和我想要的不一样,一脸蒙蔽..最后在认真阅读文章,才知道是自己设置了密码了.所以在许可的环境下,可以不设置密码,避免频繁操作密码,很苦逼的.(ps:我密码是LastPass随机生成的)</li>
+<li><p>在配置key到coding成功之后,bash执行ssh -T 测试, 测试不通过. 因为我安装网上的配置coding config的教程,可能教程比较old,然后就不知不觉被带下去踩坑了.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># coding.net 这貌似是老的写法,最新的写法是User yourmail@gmail.com,而没有HostName</div><div class="line">Host coding.net</div><div class="line">HostName coding.net</div><div class="line">PreferredAuthentications publickey</div><div class="line">IdentityFile ~/.ssh/id_rsa_coding</div></pre></td></tr></table></figure>
+</li>
+<li><p>还是看<a href="https://coding.net/help/faq/git/git.html" target="_blank" rel="external">官网的文档</a>比较靠谱,就但是知识点比较零散.</p>
+</li>
+<li>要仔细仔细仔细看文档,自己实在是太粗心了.</li>
+</ol>
+]]></content>
+      
+        
+        <tags>
+            
+            <tag> github </tag>
+            
+            <tag> coding </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Hello World]]></title>
+      <url>http://yolofit.coding.me/2016/05/30/hello-world/</url>
+      <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a>
+<a id="more"></a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+]]></content>
+      
+        
+    </entry>
+    
+  
+  
+</search>
